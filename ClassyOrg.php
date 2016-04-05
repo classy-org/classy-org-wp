@@ -1,6 +1,10 @@
 <?php
+
+require_once(__DIR__ . '/ClassyContent.php');
+require_once(__DIR__ . '/ClassyAPIClient.php');
+
 /**
- * Plugin Name: Classy
+ * Plugin Name: Classy.org
  * Plugin URI: https://developers.classy.org (@FIXME)
  * Description: Classy Wordpress Plugin Extraordinaire (@FIXME)
  * Version: 0.1.0
@@ -25,6 +29,7 @@ class ClassyOrg
 
         // Short codes
         add_shortcode('classy-campaign-progress', array($this, 'shortcodeCampaignProgress'));
+        add_shortcode('classy-campaign-overview', array($this, 'shortcodeCampaignOverview'));
     }
 
     /**
@@ -99,6 +104,79 @@ class ClassyOrg
     }
 
     /**
+     * Shortcode handler for campaign overview.
+     * 1. Total raised
+     * 2. Number of donors
+     * 3. Number of transactions
+     * 4. Average transaction
+     *
+     * @param $attributes
+     * @param $content
+     * @return null|string
+     */
+    public function shortcodeCampaignOverview($attributes, $content)
+    {
+        if (array_key_exists('id', $attributes))
+        {
+            $apiClient = ClassyAPIClient::getInstance(get_option('client_id'), get_option('client_secret'));
+            $classyContent = new ClassyContent($apiClient);
+            $campaign = $classyContent->campaignOverview($attributes['id']);
+            $averageTransaction = round($campaign['overview']['total_gross_amount'] / $campaign['overview']['transactions_count'], 2);
+
+            // FIXME: enqueue styles and make overridable
+            $html = <<<HTML
+
+            <style>
+                .sc-campaign-overview_breakdown-item {
+                    padding: 10px 0 15px;
+                    border-bottom: 2px dotted #ccc;
+                }
+                .sc-campaign-overview_breakdown-stat {
+                    font-size: 24px;
+                    font-weight: 600;
+                    margin: 0 0 5px;
+                    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                }
+                .sc-campaign-overview_breakdown-label {
+                    color: #aaa;
+                    font-size: 12px;
+                    font-weight: 500;
+                    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                }
+            </style>
+
+            <div class="sc-campaign-overview_breakdown">
+                <div class="sc-campaign-overview_breakdown-item">
+                    <strong class="sc-campaign-overview_breakdown-stat">\${$campaign['overview']['total_gross_amount']}</strong>
+                    <span class="sc-campaign-overview_breakdown-label">Gross Transactions</span>
+                </div>
+                <div class="sc-campaign-overview_breakdown-item">
+                    <strong class="sc-campaign-overview_breakdown-stat">{$campaign['overview']['donors_count']}</strong>
+                    <span class="sc-campaign-overview_breakdown-label">Donors</span>
+                </div>
+                <div class="sc-campaign-overview_breakdown-item">
+                    <strong class="sc-campaign-overview_breakdown-stat">{$campaign['overview']['transactions_count']}</strong>
+                    <span class="sc-campaign-overview_breakdown-label">Transactions</span>
+                </div>
+                <div class="sc-campaign-overview_breakdown-item">
+                    <strong class="sc-campaign-overview_breakdown-stat">\${$averageTransaction}</strong>
+                    <span class="sc-campaign-overview_breakdown-label">Average Transaction</span>
+                </div>
+            </div>
+
+
+HTML;
+
+            return $html;
+
+        } else
+        {
+            // No campaign ID provided, ignore
+            return null;
+        }
+    }
+
+    /**
      * Shortcode handler for creating campaign progress meters.
      *
      * @param $attributes
@@ -110,8 +188,6 @@ class ClassyOrg
         if (array_key_exists('id', $attributes))
         {
             // Valid ID, process
-            require_once(__DIR__ . '/ClassyContent.php');
-            require_once(__DIR__ . '/ClassyAPIClient.php');
             $apiClient = ClassyAPIClient::getInstance(get_option('client_id'), get_option('client_secret'));
             $classyContent = new ClassyContent($apiClient);
 
@@ -123,6 +199,7 @@ class ClassyOrg
             $gross = round($campaign['overview']['total_gross_amount'], 0);
             $percentToGoal = round(($campaign['overview']['total_gross_amount'] / $campaign['goal']) * 100.00, 0);
 
+            // FIXME: enqueue styles and make overridable
             $html = <<<HTML
 
                 <style>
@@ -139,6 +216,7 @@ class ClassyOrg
                     .sc-campaign-progress_goal {
                         font-size: .6em;
                         color: #727e83;
+                        font-family: "Open Sans", Arial, Helvetica, sans-serif;
                     }
                     .sc-campaign-progress_bar-mask {
                         width: 100%;
@@ -167,9 +245,11 @@ HTML;
             
             return $html;
 
-        } // No else, fall through if no ID supplied.
-
-        return null;
+        } else
+        {
+            // No campaign ID provided, ignore
+            return null;
+        }
     }
 }
 
