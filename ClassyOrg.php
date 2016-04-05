@@ -157,7 +157,7 @@ class ClassyOrg
 
                 <div class="sc-campaign-progress">
                     <strong class="sc-campaign-progress_raised">\$$gross</strong>
-                    <span class="sc-campaign-progress_goal"> / <span class="sc-campaign-progress_goal-inner">$5000</span></span>
+                    <span class="sc-campaign-progress_goal"> / <span class="sc-campaign-progress_goal-inner">\${$campaign['goal']}</span></span>
                     <div class="sc-campaign-progress_bar-mask">
                         <div class="sc-campaign-progress_bar-value" style="width: $percentToGoal%; background-color: $color;"></div>
                     </div>
