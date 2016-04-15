@@ -2,6 +2,10 @@
 
 require_once(__DIR__ . '/ClassyContent.php');
 require_once(__DIR__ . '/ClassyAPIClient.php');
+require_once(__DIR__ . '/widgets/ClassyOrg_CampaignProgressWidget.php');
+require_once(__DIR__ . '/widgets/ClassyOrg_CampaignOverviewWidget.php');
+require_once(__DIR__ . '/widgets/ClassyOrg_CampaignFundraiserLeadersWidget.php');
+require_once(__DIR__ . '/widgets/ClassyOrg_CampaignFundraisingTeamLeadersWidget.php');
 
 /**
  * Plugin Name: Classy.org
@@ -15,6 +19,8 @@ require_once(__DIR__ . '/ClassyAPIClient.php');
 class ClassyOrg
 {
     const SETTINGS_GROUP = 'classy-org-settings';
+    const CACHE_KEY_PREFIX = 'CLASSY_ORG';
+    const VERSION = '0.1';
     const DB_VERSION = '0.1';
 
     public function __construct()
@@ -30,6 +36,22 @@ class ClassyOrg
         // Short codes
         add_shortcode('classy-campaign-progress', array($this, 'shortcodeCampaignProgress'));
         add_shortcode('classy-campaign-overview', array($this, 'shortcodeCampaignOverview'));
+        add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
+        add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
+
+        // Widgets
+        add_action('widgets_init', array($this, 'registerWidgets'));
+    }
+
+    /**
+     * Register all of our widgets
+     */
+    public function registerWidgets()
+    {
+        register_widget('ClassyOrg_CampaignProgressWidget');
+        register_widget('ClassyOrg_CampaignOverviewWidget');
+        register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
+        register_widget('ClassyOrg_CampaignFUndraisingTeamLeadersWidget');
     }
 
     /**
@@ -103,6 +125,36 @@ class ClassyOrg
         echo '</td></tr></form>';
     }
 
+
+    /**
+     * Shortcode handler for generating a fundraiser (fundraising page) leaderboard.
+     *
+     * @param $attributes
+     * @param $content
+     * @return null|string
+     */
+    public function shortcodeCampaignFundraiserLeaders($attributes, $content)
+    {
+        if (array_key_exists('id', $attributes))
+        {
+            self::addStylesheet();
+
+            $count = (array_key_exists('count', $attributes))
+                ? (int)$attributes['count']
+                : 5;
+            $classyContent = new ClassyContent();
+            $fundraisers = $classyContent->campaignFundraisers($attributes['id'], $count);
+            $html = ClassyOrg_CampaignFundraiserLeadersWidget::render($fundraisers, $attributes);;
+
+            return $html;
+
+        } else
+        {
+            // No campaign ID provided, ignore.
+            return null;
+        }
+    }
+
     /**
      * Shortcode handler for campaign overview.
      * 1. Total raised
@@ -118,60 +170,44 @@ class ClassyOrg
     {
         if (array_key_exists('id', $attributes))
         {
-            $apiClient = ClassyAPIClient::getInstance(get_option('client_id'), get_option('client_secret'));
-            $classyContent = new ClassyContent($apiClient);
+            self::addStylesheet();
+
+            $classyContent = new ClassyContent();
             $campaign = $classyContent->campaignOverview($attributes['id']);
-            $averageTransaction = round($campaign['overview']['total_gross_amount'] / $campaign['overview']['transactions_count'], 2);
-
-            // FIXME: enqueue styles and make overridable
-            $html = <<<HTML
-
-            <style>
-                .sc-campaign-overview_breakdown-item {
-                    padding: 10px 0 15px;
-                    border-bottom: 2px dotted #ccc;
-                }
-                .sc-campaign-overview_breakdown-stat {
-                    font-size: 24px;
-                    font-weight: 600;
-                    margin: 0 0 5px;
-                    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-                }
-                .sc-campaign-overview_breakdown-label {
-                    color: #aaa;
-                    font-size: 12px;
-                    font-weight: 500;
-                    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-                }
-            </style>
-
-            <div class="sc-campaign-overview_breakdown">
-                <div class="sc-campaign-overview_breakdown-item">
-                    <strong class="sc-campaign-overview_breakdown-stat">\${$campaign['overview']['total_gross_amount']}</strong>
-                    <span class="sc-campaign-overview_breakdown-label">Gross Transactions</span>
-                </div>
-                <div class="sc-campaign-overview_breakdown-item">
-                    <strong class="sc-campaign-overview_breakdown-stat">{$campaign['overview']['donors_count']}</strong>
-                    <span class="sc-campaign-overview_breakdown-label">Donors</span>
-                </div>
-                <div class="sc-campaign-overview_breakdown-item">
-                    <strong class="sc-campaign-overview_breakdown-stat">{$campaign['overview']['transactions_count']}</strong>
-                    <span class="sc-campaign-overview_breakdown-label">Transactions</span>
-                </div>
-                <div class="sc-campaign-overview_breakdown-item">
-                    <strong class="sc-campaign-overview_breakdown-stat">\${$averageTransaction}</strong>
-                    <span class="sc-campaign-overview_breakdown-label">Average Transaction</span>
-                </div>
-            </div>
-
-
-HTML;
+            $html = ClassyOrg_CampaignOverviewWidget::render($campaign, $attributes);
 
             return $html;
 
         } else
         {
             // No campaign ID provided, ignore
+            return null;
+        }
+    }
+
+    /**
+     * Shortcode handler for creating fundraising team leaderboards.
+     *
+     * @param $attributes
+     * @param $content
+     * @return null|string
+     */
+    public function shortcodeCampaignFundraisingTeamLeaders($attributes, $content)
+    {
+        if (array_key_exists('id', $attributes))
+        {
+            self::addStylesheet();
+
+            $classyContent = new ClassyContent();
+            $count = array_key_exists('count', $attributes) ? $attributes['count'] : 5;
+            $fundraisingTeams = $classyContent->campaignFundraisingTeams($attributes['id'], $count);
+            $html = ClassyOrg_CampaignFundraisingTeamLeadersWidget::render($fundraisingTeams, $attributes);
+
+            return $html;
+
+        } else
+        {
+            // No campaign ID, do nothing
             return null;
         }
     }
@@ -187,62 +223,13 @@ HTML;
     {
         if (array_key_exists('id', $attributes))
         {
+            self::addStylesheet();
+
             // Valid ID, process
-            $apiClient = ClassyAPIClient::getInstance(get_option('client_id'), get_option('client_secret'));
-            $classyContent = new ClassyContent($apiClient);
-
-            $color = (array_key_exists('color', $attributes))
-                ? $attributes['color']
-                : '#030303';
+            $classyContent = new ClassyContent();
             $campaign = $classyContent->campaignOverview($attributes['id']);
+            $html = ClassyOrg_CampaignProgressWidget::render($campaign, $attributes);
 
-            $gross = round($campaign['overview']['total_gross_amount'], 0);
-            $percentToGoal = round(($campaign['overview']['total_gross_amount'] / $campaign['goal']) * 100.00, 0);
-
-            // FIXME: enqueue styles and make overridable
-            $html = <<<HTML
-
-                <style>
-                    .sc-campaign-progress::after {
-                        clear: both;
-                        content: "";
-                        display: table;
-                    }
-                    .sc-campaign-progress_raised {
-                        font-weight: 700;
-                        color: #232a2f;
-                        font-size: 1.5em;
-                    }
-                    .sc-campaign-progress_goal {
-                        font-size: .6em;
-                        color: #727e83;
-                        font-family: "Open Sans", Arial, Helvetica, sans-serif;
-                    }
-                    .sc-campaign-progress_bar-mask {
-                        width: 100%;
-                        height: 15px;
-                        background-color: #e2e2e2;
-                        border-radius: 15px;
-                        overflow: hidden;
-                        margin: 10px 0 0;
-                    }
-                    .sc-campaign-progress_bar-value {
-                        height: 100%;
-                        border-radius: 15px;
-                        transition: width 300ms ease;
-                    }
-                </style>
-
-                <div class="sc-campaign-progress">
-                    <strong class="sc-campaign-progress_raised">\$$gross</strong>
-                    <span class="sc-campaign-progress_goal"> / <span class="sc-campaign-progress_goal-inner">\${$campaign['goal']}</span></span>
-                    <div class="sc-campaign-progress_bar-mask">
-                        <div class="sc-campaign-progress_bar-value" style="width: $percentToGoal%; background-color: $color;"></div>
-                    </div>
-                </div>
-
-HTML;
-            
             return $html;
 
         } else
@@ -250,6 +237,15 @@ HTML;
             // No campaign ID provided, ignore
             return null;
         }
+    }
+
+    /**
+     * Queue stylesheet in WP response.
+     */
+    public static function addStylesheet()
+    {
+        $file = plugin_dir_url(__FILE__) . '/css/classy_org.css/';
+        wp_enqueue_style('classy_org', plugins_url('css/classy_org.css', __FILE__), array(), time());
     }
 }
 

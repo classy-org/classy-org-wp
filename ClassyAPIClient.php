@@ -45,8 +45,8 @@ class ClassyAPIClient
      */
     public function getAccessToken()
     {
-        $cacheKey = 'ACCESS_TOKEN_' . $this->clientId;
-        $token = wp_cache_get($cacheKey);
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_ACCESS_TOKEN_' . $this->clientId;
+        $token = get_transient($cacheKey);
 
         if ($token === false)
         {
@@ -62,7 +62,7 @@ class ClassyAPIClient
             $result = file_get_contents('https://api.classy.org/oauth2/auth?' . $content, false, $context);
 
             $token = json_decode($result, true);
-            wp_cache_set($cacheKey, $token['access_token'], '', ($token['expires_in'] - 60));
+            set_transient($cacheKey, $token['access_token'], ($token['expires_in'] - 60));
             $token = $token['access_token'];
         }
 
@@ -72,7 +72,7 @@ class ClassyAPIClient
     /**
      * Make an API request to Classy API.
      *
-     * @param $url Endpoint URL (e.g. /campaigns/999999)
+     * @param string $url Endpoint URL (e.g. /campaigns/999999)
      * @param string $method HTTP Method (e.g. 'GET', 'POST', 'PUT')
      * @param array $params URL Parameters to be sent as '?key1=value1&key2=value2'
      * @return string Content response

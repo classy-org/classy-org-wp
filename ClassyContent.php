@@ -8,16 +8,12 @@
 class ClassyContent
 {
     const EXPIRATION_IN_MINUTES = 10;
-    const CLASSY_CACHE_GROUP = 'classy-org';
 
     private $apiClient;
 
-    /**
-     * @param ClassyAPIClient $client
-     */
-    public function __construct(ClassyAPIClient $client)
+    public function __construct()
     {
-        $this->apiClient = $client;
+        $this->apiClient = ClassyAPIClient::getInstance(get_option('client_id'), get_option('client_secret'));
     }
 
     /**
@@ -27,8 +23,8 @@ class ClassyContent
      */
     public function campaignOverview($campaignId)
     {
-        $cacheKey = 'CAMPAIGN_OVERVIEW_' . $campaignId;
-        $result = wp_cache_get($cacheKey, self::CLASSY_CACHE_GROUP);
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_OVERVIEW_' . $campaignId;
+        $result = get_transient($cacheKey);
 
         if ($result === false)
         {
@@ -38,7 +34,69 @@ class ClassyContent
             $result = json_decode($campaign, true);
             $result['overview'] = json_decode($overview, true);
 
-            wp_cache_set($cacheKey, $result, self::CLASSY_CACHE_GROUP, $this->getExpiration());
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch campaign fundraisers from API
+     *
+     * @param integer $campaignId ID of campaign to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignFundraisers($campaignId, $count = 5)
+    {
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_FUNDRAISERS_' . $campaignId;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $params = array(
+                'aggregates' => 'true',
+                'sort' => 'total_raised:desc',
+                'per_page' => $count
+            );
+            $fundraisers = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-pages', 'GET', $params);
+            $result = json_decode($fundraisers, true);
+
+            // Pluck off relevant bits
+            $result = $result['data'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch campaign fundraising teams from API.
+     *
+     * @param $campaignId
+     * @param int $count
+     * @return array|mixed
+     */
+    public function campaignFundraisingTeams($campaignId, $count = 5)
+    {
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_FUNDRAISING_TEAMS_' . $campaignId;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $params = array(
+                'aggregates' => 'true',
+                'sort' => 'total_raised:desc',
+                'per_page' => $count
+            );
+
+            $fundraisingPages = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-teams', 'GET', $params);
+            $result = json_decode($fundraisingPages, true);
+
+            $result = $result['data'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
         }
 
         return $result;
