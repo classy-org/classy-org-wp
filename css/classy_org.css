@@ -3,45 +3,57 @@
 {
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
     font-size: 12pt;
+    margin-bottom: 30px;
 }
 
 .classy-org-widget h3.title
 {
-    font-size: 1.6em;
+    font-size: 1.2em;
 }
 
 
-/* Campaign Overview */
+/* Campaign Overview Tiles */
+.classy-org-overview
+{
+    text-align: center;
+}
 
 .classy-org-overview_item
 {
+    border-radius: 3px;
+    display: inline-block;
+    margin: 10px 10px 0 0;
+    width: 120px;
+    min-height: 100px;
+    padding: 15px;
     background-color: #f0f0f0;
-    border: 1px solid #e2e2e2;
-    float: left;
-    height: 100px;
-    margin: 2px;
-    padding: 5px;
-    text-align: center;
-    width: 125px;
-    vertical-align: bottom;
+    vertical-align: top;
 }
 
 .classy-org-overview_item-stat
 {
-    color: #232a2f;
     display: block;
-    margin-bottom: 5px;
     font-size: 1.2em;
-    font-weight: 600;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
 
 .classy-org-overview_item-label
 {
-    color: #727e83;
     display: block;
-    font-weight: 500;
+    font-size: 0.8em;
 }
 
+
+/* Campaign Overview Widget */
+
+.classy-org-sidebar div.classy-org-overview_item
+{
+    color: red;
+    display: block;
+    width: 100%;
+    min-height: 0;
+}
 
 /* Leaderboards */
 
@@ -63,7 +75,6 @@
 
 .classy-org-leaderboard_item-info-label
 {
-    color: #ccc;
     display: block;
 }
 
@@ -75,16 +86,10 @@
 
 
 /* Progress Bars */
-
 .classy-org-widget
 {
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
     font-size: 12pt;
-}
-
-.classy-org-progress .title
-{
-    font-size: 1.3em;
 }
 
 .classy-org-progress::after
@@ -126,6 +131,26 @@
 }
 
 
+/* Overview table */
+table.classy-org-overview-table {
+    border: none;
+    border-collapse: collapse;
+    width: 100%
+}
+
+table.classy-org-overview-table > tbody > tr > td {
+    border-bottom: 1px solid #e2e2e2;
+}
+
+table.classy-org-overview-table > tbody > tr > td.classy-org-overview-table_metric {
+    color: #303030;
+    padding-left: 20px;
+    text-align: right;
+}
+
+table.classy-org-overview-table > tbody > tr > td.classy-org-overview-table_label {
+    font-weight: 700;
+}
 
 
 

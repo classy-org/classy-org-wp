@@ -59,7 +59,11 @@ class ClassyContent
                 'sort' => 'total_raised:desc',
                 'per_page' => $count
             );
-            $fundraisers = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-pages', 'GET', $params);
+            $fundraisers = $this->apiClient->request(
+                '/campaigns/' . $campaignId . '/fundraising-pages?with=logo',
+                'GET',
+                $params
+            );
             $result = json_decode($fundraisers, true);
 
             // Pluck off relevant bits

@@ -36,8 +36,8 @@ class ClassyOrg
         // Short codes
         add_shortcode('classy-campaign-progress', array($this, 'shortcodeCampaignProgress'));
         add_shortcode('classy-campaign-overview', array($this, 'shortcodeCampaignOverview'));
-        add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
-        add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
+        //add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
+        //add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
 
         // Widgets
         add_action('widgets_init', array($this, 'registerWidgets'));
@@ -50,24 +50,8 @@ class ClassyOrg
     {
         register_widget('ClassyOrg_CampaignProgressWidget');
         register_widget('ClassyOrg_CampaignOverviewWidget');
-        register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
-        register_widget('ClassyOrg_CampaignFUndraisingTeamLeadersWidget');
-    }
-
-    /**
-     * Activate plugin
-     */
-    public function activate()
-    {
-
-    }
-
-    /**
-     * Deactivate plugin
-     */
-    public function deactivate()
-    {
-
+        //register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
+        //register_widget('ClassyOrg_CampaignFundraisingTeamLeadersWidget');
     }
 
     /**
@@ -102,7 +86,8 @@ class ClassyOrg
         echo '<div class="wrap">'
             . '<h2>Classy.org API Credentials</h2>';
 
-        echo '<p>@FIXME explanation of what is going on here</p>';
+        echo '<p>Enter your Classy API Version 2 credentials below.</p>';
+        echo '<p>See <a href="https://developers.classy.org">https://developers.classy.org</a> for more information.</p>';
 
         echo '<form method="post" action="options.php">';
 
@@ -174,7 +159,7 @@ class ClassyOrg
 
             $classyContent = new ClassyContent();
             $campaign = $classyContent->campaignOverview($attributes['id']);
-            $html = ClassyOrg_CampaignOverviewWidget::render($campaign, $attributes);
+            $html = ClassyOrg_CampaignOverviewWidget::renderTiles($campaign, $attributes);
 
             return $html;
 

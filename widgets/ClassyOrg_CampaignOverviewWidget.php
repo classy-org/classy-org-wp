@@ -81,7 +81,56 @@ class ClassyOrg_CampaignOverviewWidget extends WP_Widget
         $campaign = $classyContent->campaignOverview($instance['id']);
 
         ClassyOrg::addStylesheet();
-        echo self::render($campaign, $instance);
+        echo self::renderTable($campaign, $instance, 'classy-org-sidebar');
+    }
+
+    public static function renderTable($campaign, $params, $class = null)
+    {
+        $title = (!empty($params['title']))
+            ? '<h3 class="title">' . esc_html($params['title']) . '</h3>'
+            : '';
+
+        $template =  <<<OVERVIEW_TABLE
+
+        <div class="classy-org-widget $class">
+            %s
+            <table class="classy-org-overview-table" border="0">
+                <tr>
+                    <td class="classy-org-overview-table_label">Donations</td>
+                    <td class="classy-org-overview-table_metric">%s</td>
+                </tr>
+                <tr>
+                    <td class="classy-org-overview-table_label">Total Raised</td>
+                    <td class="classy-org-overview-table_metric">$%s</td>
+                </tr>
+                <tr>
+                    <td class="classy-org-overview-table_label">Average Donation</td>
+                    <td class="classy-org-overview-table_metric">$%s</td>
+                </tr>
+                <tr>
+                    <td class="classy-org-overview-table_label">Donors</td>
+                    <td class="classy-org-overview-table_metric">%s</td>
+                </tr>
+            </table>
+        </div>
+
+OVERVIEW_TABLE;
+
+        $grossTransactions = ceil($campaign['overview']['total_gross_amount']);
+        $donorCount = (int)$campaign['overview']['donors_count'];
+        $transactionCount = (int)$campaign['overview']['transactions_count'];
+        $averageTransaction = round($campaign['overview']['total_gross_amount'] / $transactionCount, 2);
+
+        $html = sprintf(
+            $template,
+            $title,
+            $transactionCount,
+            $grossTransactions,
+            $averageTransaction,
+            $donorCount
+        );
+
+        return $html;
     }
 
     /**
@@ -91,14 +140,14 @@ class ClassyOrg_CampaignOverviewWidget extends WP_Widget
      * @param $params
      * @return string
      */
-    public static function render($campaign, $params)
+    public static function renderTiles($campaign, $params, $class = null)
     {
         $widgetTemplate = <<<WIDGET_TEMPLATE
 
-        <div class="classy-org-overview classy-org-widget widget">
+        <div class="classy-org-overview $class">
           %s
           <div class="classy-org-overview_item">
-            <span class="classy-org-overview_item-stat">%s</span>
+            <span class="classy-org-overview_item-stat">$%s</span>
             <span class="classy-org-overview_item-label">Gross Transactions</span>
           </div>
           <div class="classy-org-overview_item">
@@ -110,7 +159,7 @@ class ClassyOrg_CampaignOverviewWidget extends WP_Widget
             <span class="classy-org-overview_item-label">Transactions</span>
           </div>
           <div class="classy-org-overview_item">
-            <span class="classy-org-overview_item-stat">%s</span>
+            <span class="classy-org-overview_item-stat">$%s</span>
             <span class="classy-org-overview_item-label">Average Transaction</span>
           </div>
         </div>
