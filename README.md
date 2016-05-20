@@ -7,6 +7,7 @@ Wordpress plugin for adding common embedded elements for Classy clients in their
 - Download this plugin
 - Copy files to the `wp-content/plugins` directory of your Wordpress installation
 - In your Wordpress admin dashboard, activate the 'Classy.org' plugin
+- Under the `Classy.org` admin page, enter your API credentials
 
 ## Usage
 
@@ -30,13 +31,27 @@ Embed a campaign overview for campaign #12345 with a title of "Campaign Overview
 [classy-campaign-overview id="12345" title="Campaign Overview"]
 ```
 
+Embed a campaign top fundraisers leaderboard for campaign #12345 with a title of "Top Fundraisers"
+
+```
+[classy-campaign-fundraiser-leaders id="12345" title="Top Fundraisers"]
+```
+
+Embed a campaign top fundraising team leaderboard for campaign #12345 with a title of "Top Fundraising Teams"
+
+```
+[classy-campaign-fundraising-team-leaders id="12345" title="Top Fundraising Teams"]
+```
+
 ### Widgets
 
-In the `Appearance > Widgets` section of Wordpress admin dashboard you'll find two new
+In the `Appearance > Widgets` section of Wordpress admin dashboard you'll find new
 widgets that you can drop into your widget areas.
 
 - Classy.org: Campaign Progress Bar
 - Classy.org: Campaign Overview
+- Classy.org: Campaign Fundraiser Leaders
+- Classy.org: Campaign Fundraising Team Leaders
 
 Each of these accept parameters for `id` and `title`, as above with the short codes.
 
@@ -44,8 +59,7 @@ Each of these accept parameters for `id` and `title`, as above with the short co
 
 Additional embeddable items coming soon:
 
-- Campaign top fundraiser leaderboard
-- Campaign top fundraising team leaderboard
+- Fundraiser and fundraising team images on leaderboards
 - Organization overview of campaigns
 
 Other items:

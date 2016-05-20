@@ -56,11 +56,12 @@ class ClassyContent
         {
             $params = array(
                 'aggregates' => 'true',
-                'sort' => 'total_raised:desc',
-                'per_page' => $count
+                'sort'       => 'total_raised:desc',
+                'per_page'   => $count,
+                'with'       => 'supporter'
             );
             $fundraisers = $this->apiClient->request(
-                '/campaigns/' . $campaignId . '/fundraising-pages?with=logo',
+                '/campaigns/' . $campaignId . '/fundraising-pages',
                 'GET',
                 $params
             );

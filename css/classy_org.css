@@ -62,15 +62,22 @@
     margin-bottom: 10px;
 }
 
+.classy-org-leaderboard_item-info
+{
+    margin-left: 10px;
+}
+
 .classy-org-leaderboard_item-info, .classy-org-leaderboard_item-image
 {
     display: inline-block;
     vertical-align: middle;
 }
 
-.classy-org-leaderboard_item-image img
+.classy-org-leaderboard_item-image
 {
-    border-radius: 50%;
+    background-color: #303030;
+    border-radius: 5px;
+    padding: 5px 10px;
 }
 
 .classy-org-leaderboard_item-info-label
@@ -80,7 +87,7 @@
 
 .classy-org-leaderboard_item-info-metric
 {
-    color: #ccc;
+    color: #909090;
     display: block;
 }
 

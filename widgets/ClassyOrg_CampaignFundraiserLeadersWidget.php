@@ -119,11 +119,11 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        <img src="%s" />
+        <i class="fa fa-user fa-2x fa-inverse"></i>
       </div>
       <div class="classy-org-leaderboard_item-info">
         <span class="classy-org-leaderboard_item-info-label">%s</span>
-        <span class="classy-org-leaderboard_item-info-metric">%s</span>
+        <span class="classy-org-leaderboard_item-info-metric">$%s</span>
       </div>
     </div>
 
@@ -131,7 +131,7 @@ ITEM_TEMPLATE;
 
         if (!empty($params['title']))
         {
-            $title = sprintf('<h3 class="classy-org-leaderboard_title">%s</h3>', $params['title']);
+            $title = sprintf('<h3 class="classy-org-leaderboard_title">%s</h3>', esc_html($params['title']));
         } else
         {
             $title = '';
@@ -141,11 +141,13 @@ ITEM_TEMPLATE;
 
         foreach ($fundraisers as $fundraiser)
         {
+            $name = (empty($fundraiser['alias']))
+                ? $fundraiser['supporter']['first_name'] . ' ' . $fundraiser['supporter']['last_name']
+                : $fundraiser['alias'];
             $itemsHtml .= sprintf(
                 $itemTemplate,
-                'http://placehold.it/50x50', // FIXME: Get image when available.
-                $fundraiser['alias'],
-                $fundraiser['total_raised']
+                esc_html($name),
+                esc_html($fundraiser['total_raised'])
             );
         }
 

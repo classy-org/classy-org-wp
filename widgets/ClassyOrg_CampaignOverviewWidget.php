@@ -124,10 +124,10 @@ OVERVIEW_TABLE;
         $html = sprintf(
             $template,
             $title,
-            $transactionCount,
-            $grossTransactions,
-            $averageTransaction,
-            $donorCount
+            esc_html($transactionCount),
+            esc_html($grossTransactions),
+            esc_html($averageTransaction),
+            esc_html($donorCount)
         );
 
         return $html;
@@ -168,7 +168,7 @@ OVERVIEW_TABLE;
 WIDGET_TEMPLATE;
 
         $title = (!empty($params['title']))
-            ? sprintf('<h3 class="classy-org-overview_title">%s</h3>', $params['title'])
+            ? sprintf('<h3 class="classy-org-overview_title">%s</h3>', esc_html($params['title']))
             : '';
 
         $grossTransactions = ceil($campaign['overview']['total_gross_amount']);
@@ -179,10 +179,10 @@ WIDGET_TEMPLATE;
         $html = sprintf(
             $widgetTemplate,
             $title,
-            $grossTransactions,
-            $donorCount,
-            $transactionCount,
-            $averageTransaction
+            esc_html($grossTransactions),
+            esc_html($donorCount),
+            esc_html($transactionCount),
+            esc_html($averageTransaction)
         );
 
         return $html;

@@ -36,8 +36,8 @@ class ClassyOrg
         // Short codes
         add_shortcode('classy-campaign-progress', array($this, 'shortcodeCampaignProgress'));
         add_shortcode('classy-campaign-overview', array($this, 'shortcodeCampaignOverview'));
-        //add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
-        //add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
+        add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
+        add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
 
         // Widgets
         add_action('widgets_init', array($this, 'registerWidgets'));
@@ -50,8 +50,8 @@ class ClassyOrg
     {
         register_widget('ClassyOrg_CampaignProgressWidget');
         register_widget('ClassyOrg_CampaignOverviewWidget');
-        //register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
-        //register_widget('ClassyOrg_CampaignFundraisingTeamLeadersWidget');
+        register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
+        register_widget('ClassyOrg_CampaignFundraisingTeamLeadersWidget');
     }
 
     /**
@@ -231,6 +231,7 @@ class ClassyOrg
     {
         $file = plugin_dir_url(__FILE__) . '/css/classy_org.css/';
         wp_enqueue_style('classy_org', plugins_url('css/classy_org.css', __FILE__), array(), time());
+        wp_enqueue_style('classy_org_icon_fonts', plugins_url('css/font-awesome.min.css', __FILE__), array(), time());
     }
 }
 

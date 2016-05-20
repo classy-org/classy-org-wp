@@ -115,7 +115,7 @@ WIDGET_TEMPLATE;
 
         if (!empty($params['title']))
         {
-            $title = sprintf('<h3 class="classy-org-progress_title">%s</h3>', $params['title']);
+            $title = sprintf('<h3 class="classy-org-progress_title">%s</h3>', esc_html($params['title']));
 
         } else
         {
@@ -129,9 +129,9 @@ WIDGET_TEMPLATE;
         $html = sprintf(
             $widgetTemplate,
             $title,
-            $totalRaised,
-            $goal,
-            $percentToGoal
+            esc_html($totalRaised),
+            esc_html($goal),
+            esc_html($percentToGoal)
         );
 
         return $html;
