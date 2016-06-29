@@ -124,7 +124,7 @@ WIDGET_TEMPLATE;
 
         $goal = (empty($campaign['goal'])) ? 0 : $campaign['goal'];
         $totalRaised = (empty($campaign['overview']['total_gross_amount'])) ? 0 : ceil($campaign['overview']['total_gross_amount']);
-        $percentToGoal = ceil(($totalRaised / $goal) * 100);
+        $percentToGoal = ($goal > 0) ? ceil(($totalRaised / $goal) * 100) : 0;
 
         $html = sprintf(
             $widgetTemplate,
