@@ -40,7 +40,7 @@ Embed a campaign top fundraisers leaderboard for campaign #12345 with a title of
 Embed a campaign top fundraising team leaderboard for campaign #12345 with a title of "Top Fundraising Teams"
 
 ```
-[classy-campaign-fundraising-team-leaders id="12345" title="Top Fundraising Teams"]
+[classy-campaign-fundraising-teams-leaders id="12345" title="Top Fundraising Teams"]
 ```
 
 ### Widgets
