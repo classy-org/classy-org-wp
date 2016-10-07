@@ -174,7 +174,7 @@ WIDGET_TEMPLATE;
         $grossTransactions = ceil($campaign['overview']['total_gross_amount']);
         $donorCount = (int)$campaign['overview']['donors_count'];
         $transactionCount = (int)$campaign['overview']['transactions_count'];
-        $averageTransaction = round($campaign['overview']['total_gross_amount'] / $transactionCount, 2);
+        $averageTransaction = ($transactionCount > 0) ? round($campaign['overview']['total_gross_amount'] / $transactionCount, 2) : 0;
 
         $html = sprintf(
             $widgetTemplate,
