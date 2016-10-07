@@ -58,7 +58,8 @@ class ClassyContent
                 'aggregates' => 'true',
                 'sort'       => 'total_raised:desc',
                 'per_page'   => $count,
-                'with'       => 'supporter'
+                'with'       => 'supporter',
+                'filter'     => 'status<>deleted'
             );
             $fundraisers = $this->apiClient->request(
                 '/campaigns/' . $campaignId . '/fundraising-pages',
@@ -93,7 +94,8 @@ class ClassyContent
             $params = array(
                 'aggregates' => 'true',
                 'sort' => 'total_raised:desc',
-                'per_page' => $count
+                'per_page' => $count,
+                'filter'     => 'status<>deleted'
             );
 
             $fundraisingPages = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-teams', 'GET', $params);
