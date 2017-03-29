@@ -95,7 +95,7 @@ class ClassyContent
                 'aggregates' => 'true',
                 'sort' => 'total_raised:desc',
                 'per_page' => $count,
-                'filter'     => 'status<>deleted'
+                'filter'     => 'status=active'
             );
 
             $fundraisingPages = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-teams', 'GET', $params);
