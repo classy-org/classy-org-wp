@@ -135,6 +135,7 @@ OVERVIEW_TABLE;
 
     /**
      * Generate HTML for campaign progress
+     * ADDED MORE CONTENT TO OVERVIEW
      *
      * @param $campaign
      * @param $params
@@ -162,6 +163,10 @@ OVERVIEW_TABLE;
             <span class="classy-org-overview_item-stat">$%s</span>
             <span class="classy-org-overview_item-label">Average Transaction</span>
           </div>
+          <div class="classy-org-overview_item">
+            <span class="classy-org-overview_item-stat">%s</span>
+            <span class="classy-org-overview_item-label">Started At</span>
+          </div>
         </div>
         <div style="clear: both;"></div>
 
@@ -175,6 +180,8 @@ WIDGET_TEMPLATE;
         $donorCount = (int)$campaign['overview']['donors_count'];
         $transactionCount = (int)$campaign['overview']['transactions_count'];
         $averageTransaction = ($transactionCount > 0) ? round($campaign['overview']['total_gross_amount'] / $transactionCount, 2) : 0;
+        $startedAt = $campaign['ended_at'];
+        $campaignID = $campaign['id'];
 
         $html = sprintf(
             $widgetTemplate,
@@ -182,7 +189,9 @@ WIDGET_TEMPLATE;
             esc_html($grossTransactions),
             esc_html($donorCount),
             esc_html($transactionCount),
-            esc_html($averageTransaction)
+            esc_html($averageTransaction),
+            esc_html($startedAt),
+            esc_html($campaignID)
         );
 
         return $html;
