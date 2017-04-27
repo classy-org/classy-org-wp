@@ -78,6 +78,169 @@ class ClassyContent
     }
 
     /**
+     * ADDED - Fetch campaign list from API
+     *
+     * @param integer $orgId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignList($count)
+    {
+        $orgId = get_option( 'organization_id' );
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_LIST_' . $orgId;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $date = gmdate("Y-m-d\TH:i:s\Z");
+            $params = array(
+                'aggregates' => 'true',
+                'per_page'   => $count,
+                'sort'       => 'ended_at:asc',
+                'filter'     => 'status=active,type=ticketed,ended_at>'.$date
+            );
+            $campaigns = $this->apiClient->request(
+                '/organizations/' . $orgId . '/campaigns',
+                'GET',
+                $params
+            );
+            $result = json_decode($campaigns, true);
+
+            // Pluck off relevant bits
+            $result = $result['data'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
+     * ADDED - Fetch campaign list from API to create WP pages
+     *
+     * @param integer $orgId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function createEventPages($count)
+    {
+        $orgId = get_option( 'organization_id' );
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_EVENT_PAGE_LIST_' . $orgId;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $date = gmdate("Y-m-d\TH:i:s\Z");
+            $params = array(
+                'aggregates' => 'true',
+                'per_page'   => $count,
+                'sort'       => 'ended_at:asc',
+                'filter'     => 'status=active,type=ticketed,ended_at>'.$date
+            );
+            $campaigns = $this->apiClient->request(
+                '/organizations/' . $orgId . '/campaigns',
+                'GET',
+                $params
+            );
+            $result = json_decode($campaigns, true);
+
+            // Pluck off relevant bits
+            $result = $result['data'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
+     * ADDED - Fetch campaign ticket types from API
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignTicketTypes($campaignID)
+    {
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_TICKET_TYPES_' . $campaignID;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $params = array(
+                'aggregates' => 'true'
+            );
+            $ticket_types = $this->apiClient->request(
+                '/campaigns/' . $campaignID . '/ticket-types',
+                'GET',
+                $params
+            );
+            $result = json_decode($ticket_types, true);
+
+            // Pluck off relevant bits
+            $result = $result['data'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
+     * ADDED - Fetch campaign transactions from API
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignTransactions($campaignID, $email)
+    {
+        $params = array(
+            'aggregates' => 'true',
+            'filter'    => 'email='.$email
+        );
+        $transactions = $this->apiClient->request(
+            '/campaigns/' . $campaignID . '/registrations',
+            'GET',
+            $params
+        );
+        $result = json_decode($transactions, true);
+
+        // Pluck off relevant bits
+        $result = $result['data'];
+        return json_encode($result);
+    }
+
+    /**
+     * ADDED - Fetch campaign transactions from API
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignMember($memberID)
+    {
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_MEMB_' . $memberID;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $this_member = $this->apiClient->request(
+                '/members/' . $memberID,
+                'GET'
+            );
+            $result = json_decode($this_member, true);
+            write_log($result['id']);
+            // Pluck off relevant bits
+            $result = $result['id'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
+    /**
      * Fetch campaign fundraising teams from API.
      *
      * @param $campaignId
