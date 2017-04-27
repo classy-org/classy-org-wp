@@ -185,6 +185,61 @@ class ClassyContent
 
         return $result;
     }
+
+    /**
+     * ADDED - Fetch campaign transactions from API
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignTransactions($campaignID, $email)
+    {
+        $params = array(
+            'aggregates' => 'true',
+            'filter'    => 'email='.$email
+        );
+        $transactions = $this->apiClient->request(
+            '/campaigns/' . $campaignID . '/registrations',
+            'GET',
+            $params
+        );
+        $result = json_decode($transactions, true);
+
+        // Pluck off relevant bits
+        $result = $result['data'];
+        return json_encode($result);
+    }
+
+    /**
+     * ADDED - Fetch campaign transactions from API
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $count Number of records to return
+     * @return array|bool|mixed
+     */
+    public function campaignMember($memberID)
+    {
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_MEMB_' . $memberID;
+        $result = get_transient($cacheKey);
+
+        if ($result === false)
+        {
+            $this_member = $this->apiClient->request(
+                '/members/' . $memberID,
+                'GET'
+            );
+            $result = json_decode($this_member, true);
+            write_log($result['id']);
+            // Pluck off relevant bits
+            $result = $result['id'];
+
+            set_transient($cacheKey, $result, $this->getExpiration());
+        }
+
+        return $result;
+    }
+
     /**
      * Fetch campaign fundraising teams from API.
      *
