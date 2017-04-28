@@ -190,7 +190,7 @@ class ClassyContent
      * ADDED - Fetch campaign transactions from API
      *
      * @param integer $campaignId ID of organization to pull
-     * @param integer $count Number of records to return
+     * @param text $email to retrieve
      * @return array|bool|mixed
      */
     public function campaignTransactions($campaignID, $email)
@@ -206,6 +206,31 @@ class ClassyContent
         );
         $result = json_decode($transactions, true);
 
+        // Pluck off relevant bits
+        $result = $result['data'];
+        return json_encode($result);
+    }
+
+    /**
+     * ADDED - Create campaign fundraising page
+     *
+     * @param integer $campaignId ID of organization to pull
+     * @param integer $memberID Number of records to return
+     * @return array|bool|mixed
+     */
+    public function createFundraiserPage($campaignID, $memberID, $goal)
+    {
+        $params = array(
+            'member_id'    => $memberID,
+            'goal'       => $goal
+        );
+        $fundraiser = $this->apiClient->request(
+            'campaigns/' . $campaignID . '/fundraising-pages',
+            'POST',
+            $params
+        );
+        $result = json_decode($fundraiser, true);
+        write_log(print_r($fundraiser));
         // Pluck off relevant bits
         $result = $result['data'];
         return json_encode($result);
