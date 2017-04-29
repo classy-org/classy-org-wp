@@ -4,6 +4,7 @@ require_once(__DIR__ . '/ClassyContent.php');
 require_once(__DIR__ . '/ClassyAPIClient.php');
 require_once(__DIR__ . '/widgets/ClassyOrg_CampaignProgressWidget.php');
 require_once(__DIR__ . '/widgets/ClassyOrg_CampaignOverviewWidget.php');
+require_once(__DIR__ . '/widgets/ClassyOrg_CampaignListWidget.php');
 require_once(__DIR__ . '/widgets/ClassyOrg_CampaignFundraiserLeadersWidget.php');
 require_once(__DIR__ . '/widgets/ClassyOrg_CampaignFundraisingTeamLeadersWidget.php');
 
@@ -34,8 +35,10 @@ class ClassyOrg
         add_action('admin_init', array($this, 'settingsRegister'));
 
         // Short codes
+        // ADDED - Campaign List shortcode
         add_shortcode('classy-campaign-progress', array($this, 'shortcodeCampaignProgress'));
         add_shortcode('classy-campaign-overview', array($this, 'shortcodeCampaignOverview'));
+        add_shortcode('classy-campaign-list', array($this, 'shortcodeCampaignList'));
         add_shortcode('classy-campaign-fundraiser-leaders', array($this, 'shortcodeCampaignFundraiserLeaders'));
         add_shortcode('classy-campaign-fundraising-teams-leaders', array($this, 'shortcodeCampaignFundraisingTeamLeaders'));
 
@@ -50,16 +53,18 @@ class ClassyOrg
     {
         register_widget('ClassyOrg_CampaignProgressWidget');
         register_widget('ClassyOrg_CampaignOverviewWidget');
+        register_widget('ClassyOrg_CampaignListWidget');
         register_widget('ClassyOrg_CampaignFundraiserLeadersWidget');
         register_widget('ClassyOrg_CampaignFundraisingTeamLeadersWidget');
     }
 
     /**
      * Register settings menu in sidebar.
+     * Changed to add_menu_page from add_object_page
      */
     public function settingsMenu()
     {
-        add_object_page(
+        add_menu_page(
             'Classy.org Settings',
             'Classy.org',
             'administrator',
@@ -71,11 +76,13 @@ class ClassyOrg
 
     /**
      * Register settings group and keys.
+     * ADDED - Organization ID field
      */
     public function settingsRegister()
     {
         register_setting(self::SETTINGS_GROUP, 'client_id');
         register_setting(self::SETTINGS_GROUP, 'client_secret');
+        register_setting(self::SETTINGS_GROUP, 'organization_id');
     }
 
     /**
@@ -88,6 +95,7 @@ class ClassyOrg
 
         echo '<p>Enter your Classy API Version 2 credentials below.</p>';
         echo '<p>See <a href="https://developers.classy.org">https://developers.classy.org</a> for more information.</p>';
+        echo '<p>Organization ID is entered here so it is not required anywhere else</p>';
 
         echo '<form method="post" action="options.php">';
 
@@ -102,6 +110,10 @@ class ClassyOrg
             . '<tr valign="top">'
             . '  <th scope="row">Client Secret</th>'
             . '  <td><input type="text" name="client_secret" value="' . esc_attr(get_option('client_secret'))  . '"></td>'
+            . '</tr>'
+            . '<tr valign="top">'
+            . '  <th scope="row">Organization ID</th>'
+            . '  <td><input type="text" name="organization_id" value="' . esc_attr(get_option('organization_id'))  . '"></td>'
             . '</tr>'
             . '<tr><td>';
 
@@ -130,6 +142,35 @@ class ClassyOrg
             $classyContent = new ClassyContent();
             $fundraisers = $classyContent->campaignFundraisers($attributes['id'], $count);
             $html = ClassyOrg_CampaignFundraiserLeadersWidget::render($fundraisers, $attributes);;
+
+            return $html;
+
+        } else
+        {
+            // No campaign ID provided, ignore.
+            return null;
+        }
+    }
+
+    /**
+     * ADDED - Shortcode handler for generating a campaign list.
+     *
+     * @param $attributes
+     * @param $content
+     * @return null|string
+     */
+    public function shortcodeCampaignList($attributes, $content)
+    {
+        if (array_key_exists('count', $attributes))
+        {
+            self::addStylesheet();
+
+            $count = (array_key_exists('count', $attributes))
+                ? (int)$attributes['count']
+                : 5;
+            $classyContent = new ClassyContent();
+            $campaigns = $classyContent->campaignList($count);
+            $html = ClassyOrg_CampaignListWidget::render($campaigns, $attributes);;
 
             return $html;
 
