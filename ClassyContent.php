@@ -58,7 +58,6 @@ class ClassyContent
                 'aggregates' => 'true',
                 'sort'       => 'total_raised:desc',
                 'per_page'   => $count,
-                'with'       => 'supporter',
                 'filter'     => 'status=active'
             );
             $fundraisers = $this->apiClient->request(
@@ -221,19 +220,17 @@ class ClassyContent
     public function createFundraiserPage($campaignID, $memberID, $goal)
     {
         $params = array(
-            'member_id'    => $memberID,
-            'goal'       => $goal
+            'filter'    => 'member_id=5018748,goal=500'
         );
         $fundraiser = $this->apiClient->request(
-            'campaigns/' . $campaignID . '/fundraising-pages',
+            '/campaigns/'.$campaignID.'/fundraising-teams',
             'POST',
             $params
         );
         $result = json_decode($fundraiser, true);
-        write_log(print_r($fundraiser));
         // Pluck off relevant bits
         $result = $result['data'];
-        return json_encode($result);
+        //write_log( json_encode($result) );
     }
 
     /**
@@ -245,7 +242,7 @@ class ClassyContent
      */
     public function campaignMember($memberID)
     {
-        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_MEMB_' . $memberID;
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_MEMBER_' . $memberID;
         $result = get_transient($cacheKey);
 
         if ($result === false)
@@ -255,7 +252,7 @@ class ClassyContent
                 'GET'
             );
             $result = json_decode($this_member, true);
-            write_log($result['id']);
+            //write_log($result['id']);
             // Pluck off relevant bits
             $result = $result['id'];
 
@@ -283,10 +280,14 @@ class ClassyContent
                 'aggregates' => 'true',
                 'sort' => 'total_raised:desc',
                 'per_page' => $count,
-                'filter'     => 'status=active'
+                'filter'    => 'status=active'
             );
 
-            $fundraisingPages = $this->apiClient->request('/campaigns/' . $campaignId . '/fundraising-teams', 'GET', $params);
+            $fundraisingPages = $this->apiClient->request(
+                '/campaigns/' . $campaignId . '/fundraising-teams'
+                , 'GET', 
+                $params
+            );
             $result = json_decode($fundraisingPages, true);
 
             $result = $result['data'];

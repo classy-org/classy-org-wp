@@ -1,15 +1,15 @@
 <?php
 
-class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
+class ClassyOrg_CampaignMemberListWidget extends WP_Widget
 {
-    const ID = 'ClassyOrg_CampaignFundraiserLeadersWidget';
+    const ID = 'ClassyOrg_CampaignMemberListWidget';
 
     /**
      * Create instance of widget
      */
     public function __construct()
     {
-        parent::__construct(self::ID, 'Classy.org: Campaign Fundraiser Leaders');
+        parent::__construct(self::ID, 'Classy.org: Campaign List');
     }
 
     /**
@@ -22,11 +22,11 @@ class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
     {
         if ($instance) {
             $title = array_key_exists('title', $instance) ? $instance['title'] : '';
-            $campaignId = array_key_exists('id', $instance) ? $instance['id'] : '';
-            $count = array_key_exists('id', $instance) ? $instance['count'] : '';
+            $orgID = array_key_exists('id', $instance) ? $instance['id'] : '';
+            $count = array_key_exists('count', $instance) ? $instance['count'] : '';
         } else {
             $title = '';
-            $campaignId = '';
+            $orgID = '';
             $count = 5;
         }
 
@@ -37,15 +37,7 @@ class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
             . '<label for="' . $this->get_field_name('id') . '">' . _e('Campaign ID:') . '</label>'
             . '<input class="widefat" id="' . $this->get_field_id('id')
             . '" name="' . $this->get_field_name('id') . '" type="text" value="'
-            . esc_attr($campaignId) . '" placeholder="123456789" />'
-            . '</p>';
-
-        // Title
-        echo '<p>'
-            . '<label for="' . $this->get_field_name('title') . '">' . _e('Title:') . '</label>'
-            . '<input class="widefat" id="' . $this->get_field_id('title')
-            . '" name="' . $this->get_field_name('title') . '" type="text" value="'
-            . esc_attr($title) . '" placeholder="My Campaign Title" />'
+            . esc_attr($orgID) . '" placeholder="123456789" />'
             . '</p>';
 
         // Count
@@ -73,7 +65,6 @@ class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
 
         // FIXME: validate parameters
         $instance['id'] = strip_tags($newInstance['id']);
-        $instance['title'] = strip_tags($newInstance['title']);
         $instance['count'] = (int)strip_tags($newInstance['count']);
 
         return $instance;
@@ -89,20 +80,20 @@ class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
     {
         // Defer to renderer which we also use for short codes
         $classyContent = new ClassyContent();
-        $fundraisers = $classyContent->campaignFundraisers($instance['id'], $instance['count']);
-
+        $members = $classyContent->campaignTransactions($instance['id'], $instance['count']);
+        write_log('Campaign ID: '.$instance['id']);
         ClassyOrg::addStylesheet();
-        echo self::render($fundraisers, $instance);
+        echo self::render($members, $instance);
     }
 
     /**
-     * Generate HTML for campaign top fundraisers
+     * Generate HTML for campaign top fundraising teams
      *
-     * @param $fundraisers
+     * @param $teams
      * @param $params
      * @return string
      */
-    public static function render($fundraisers, $params)
+    public static function render($members, $params)
     {
         $widgetTemplate = <<<WIDGET_TEMPLATE
 
@@ -119,16 +110,15 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        %s
+        <i class="fa fa-group fa-2x fa-inverse"></i>
       </div>
       <div class="classy-org-leaderboard_item-info">
-        <span class="classy-org-leaderboard_item-info-label">%s</span>
-      <div class="progress">
-        <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="70"
-        aria-valuemin="0" aria-valuemax="100" style="width:%s">
-        </div>
-      </div>      
-        <span class="classy-org-leaderboard_item-info-metric"><strong>$%s</strong> raised (%s)</span>
+        <span class="classy-org-leaderboard_item-info-label">Name</span>
+        <span class="classy-org-leaderboard_item-info-metric">%s</span>
+      </div>
+      <div class="classy-org-leaderboard_item-info">
+        <span class="classy-org-leaderboard_item-info-label">Image</span>
+        <span class="classy-org-leaderboard_item-info-metric">%s</span>
       </div>
     </div>
 
@@ -136,33 +126,20 @@ ITEM_TEMPLATE;
 
         if (!empty($params['title']))
         {
-            $title = sprintf('<h4 class="classy-org-leaderboard_title">%s</h4>', esc_html($params['title']));
+            $title = sprintf('<h3 class="classy-org-leaderboard_title">%s</h3>', esc_html($params['title']));
         } else
         {
             $title = '';
         }
 
         $itemsHtml = '';
-
-        foreach ($fundraisers as $fundraiser)
+        foreach ($members as $member)
         {
-          //write_log($fundraiser);
-            $goal = $fundraiser['goal'];
-            $total_raised = $fundraiser['total_raised'];
-            $percent = round(( $total_raised / $goal ) * 100);
-            $percent_meter = ($percent > 100) ? 100 : $percent;
-            $name = (empty($fundraiser['alias']))
-                ? $fundraiser['member']['first_name'] . ' ' . $fundraiser['member']['last_name']
-                : $fundraiser['alias'];
-            $thumbnail = (empty($fundraiser['logo_url'])) ? '<i class="fa fa-user fa-2x fa-inverse"></i>' : '<img src="'.$fundraiser['logo_url'].'"/>';
-            $itemsHtml .= sprintf(
-                $itemTemplate,
-                $thumbnail,
-                esc_html($name),
-                esc_html($percent_meter.'%'),
-                esc_html($total_raised),
-                esc_html($percent.'%')
-            );
+            $classyContent = new ClassyContent();
+            $memberId = $classyContent->campaignMember($member['member_id']);
+            $types = Array();
+
+            $itemsHtml .= '';
         }
 
         $html = sprintf($widgetTemplate, $title, $itemsHtml);

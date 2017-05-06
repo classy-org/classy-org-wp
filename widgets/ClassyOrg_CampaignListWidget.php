@@ -1,7 +1,4 @@
 <?php
-/*****
-* ADDED WIDGET TO DISPLAY CAMPAIGN/EVENT LISTS
-*****/
 
 class ClassyOrg_CampaignListWidget extends WP_Widget
 {
@@ -149,7 +146,6 @@ ITEM_TEMPLATE;
         {
             $classyContent = new ClassyContent();
             $ticket_types = $classyContent->campaignTicketTypes($campaign['id']);
-            write_log($ticket_types);
 
             $types = Array();
             foreach($ticket_types as $t) $types[] = $t['name'];

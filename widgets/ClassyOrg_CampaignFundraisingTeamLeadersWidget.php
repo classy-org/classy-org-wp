@@ -119,11 +119,16 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        <i class="fa fa-group fa-2x fa-inverse"></i>
+        %s
       </div>
       <div class="classy-org-leaderboard_item-info">
         <span class="classy-org-leaderboard_item-info-label">%s</span>
-        <span class="classy-org-leaderboard_item-info-metric">$%s</span>
+      <div class="progress">
+        <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="70"
+        aria-valuemin="0" aria-valuemax="100" style="width:%s">
+        </div>
+      </div>      
+        <span class="classy-org-leaderboard_item-info-metric"><strong>$%s</strong> raised (%s)</span>
       </div>
     </div>
 
@@ -131,7 +136,7 @@ ITEM_TEMPLATE;
 
         if (!empty($params['title']))
         {
-            $title = sprintf('<h3 class="classy-org-leaderboard_title">%s</h3>', esc_html($params['title']));
+            $title = sprintf('<h4 class="classy-org-leaderboard_title">%s</h4>', esc_html($params['title']));
         } else
         {
             $title = '';
@@ -141,10 +146,19 @@ ITEM_TEMPLATE;
 
         foreach ($teams as $team)
         {
+          //write_log($team);
+            $goal = $team['goal'];
+            $total_raised = $team['total_raised'];
+            $percent = round(( $total_raised / $goal ) * 100);
+            $percent_meter = ($percent > 100) ? 100 : $percent;
+            $thumbnail = (empty($team['logo_url'])) ? '<i class="fa fa-group fa-2x fa-inverse"></i>' : '<img src="'.$team['logo_url'].'"/>';
             $itemsHtml .= sprintf(
                 $itemTemplate,
+                $thumbnail,
                 esc_html($team['name']),
-                esc_html($team['total_raised'])
+                esc_html($percent_meter.'%'),                
+                esc_html($total_raised),
+                esc_html($percent.'%')
             );
         }
 
