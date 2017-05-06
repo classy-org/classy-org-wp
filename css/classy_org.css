@@ -4,6 +4,7 @@
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
     font-size: 12pt;
     margin-bottom: 30px;
+    padding: 50px 0;
 }
 
 .classy-org-widget h3.title
@@ -57,16 +58,38 @@
 
 /* Leaderboards */
 
+.progress-bar-primary{
+    background-color:#ed1c24;
+}
+.classy-org-leaderboard{
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.classy-org-leaderboard_items .progress{
+    border-radius: 10px;
+    height: 12px;
+    margin-bottom: 10px;
+}
+.classy-org-leaderboard_items .progress-bar{
+    border-radius:10px;
+}
 .classy-org-leaderboard_item
 {
     margin-bottom: 10px;
+    clear: both;
 }
 
 .classy-org-leaderboard_item-info
 {
     margin-left: 10px;
+    width: 100%;
+    max-width: 290px;
 }
-
+.classy-org-leaderboard_title{
+    border-bottom: 1px solid #909090;
+    line-height: 40px;
+}
 .classy-org-leaderboard_item-info, .classy-org-leaderboard_item-image
 {
     display: inline-block;
@@ -75,14 +98,26 @@
 
 .classy-org-leaderboard_item-image
 {
-    background-color: #303030;
     border-radius: 5px;
     padding: 5px 10px;
+    float: left;
+    width: 100px;
+    text-align: center;
+    color: #909090;
+}
+.classy-org-leaderboard_item-image i{
+    color: #909090;
+    font-size: 65px;
 }
 
+.classy-org-leaderboard_item-image img {
+    width: 80px;
+    border-radius: 50%;
+}
 .classy-org-leaderboard_item-info-label
 {
     display: block;
+    padding-top: 10px;
 }
 
 .classy-org-leaderboard_item-info-metric

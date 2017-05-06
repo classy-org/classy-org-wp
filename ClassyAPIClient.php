@@ -81,9 +81,9 @@ class ClassyAPIClient
     {
         $url = self::CLASSY_API_BASEURL
             . '/' . self::CLASSY_API_VERSION
-            . '/' . $url
+            . $url
             . '?' . http_build_query($params);
-
+        write_log($url);
         $token = $this->getAccessToken();
 
         $options = array(
