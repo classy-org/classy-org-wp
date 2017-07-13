@@ -23,16 +23,16 @@ class ClassyContent
      */
     public function campaignOverview($campaignId)
     {
-        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_OVERVIEW_' . $campaignId;
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_CAMPAIGN_OVERVIEWS' . $campaignId;
         $result = get_transient($cacheKey);
 
         if ($result === false)
         {
             $campaign = $this->apiClient->request('/campaigns/' . $campaignId);
             $overview = $this->apiClient->request('/campaigns/' . $campaignId . '/overview');
-
             $result = json_decode($campaign, true);
-            $result['overview'] = json_decode($overview, true);
+            //write_log( $result );
+           $result['overview'] = json_decode($overview, true);
 
             set_transient($cacheKey, $result, $this->getExpiration());
         }
@@ -124,17 +124,18 @@ class ClassyContent
     public function createEventPages($count)
     {
         $orgId = get_option( 'organization_id' );
-        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_EVENT_PAGE_LIST_' . $orgId;
+        $cacheKey = ClassyOrg::CACHE_KEY_PREFIX . '_EVENT_PAGES_' . $orgId;
         $result = get_transient($cacheKey);
 
         if ($result === false)
         {
             $date = gmdate("Y-m-d\TH:i:s\Z");
+            //write_log('Todays date is: '.$date);
             $params = array(
                 'aggregates' => 'true',
                 'per_page'   => $count,
                 'sort'       => 'ended_at:asc',
-                'filter'     => 'status=active,type=ticketed,ended_at>'.$date
+                'filter'     => 'status=active,started_at>'.$date
             );
             $campaigns = $this->apiClient->request(
                 '/organizations/' . $orgId . '/campaigns',
