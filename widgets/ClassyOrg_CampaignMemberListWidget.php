@@ -1,8 +1,8 @@
 <?php
 
-class ClassyOrg_CampaignFundraiserLeadersWidget extends WP_Widget
+class ClassyOrg_CampaignMemberListWidget extends WP_Widget
 {
-    const ID = 'ClassyOrg_CampaignFundraiserLeadersWidget';
+    const ID = 'ClassyOrg_CampaignMemberListWidget';
 
     /**
      * Create instance of widget
@@ -119,16 +119,11 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        %s
+        <i class="fa fa-user fa-2x fa-inverse"></i>
       </div>
       <div class="classy-org-leaderboard_item-info">
         <span class="classy-org-leaderboard_item-info-label">%s</span>
-      <div class="progress">
-        <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="70"
-        aria-valuemin="0" aria-valuemax="100" style="width:%s">
-        </div>
-      </div>      
-        <span class="classy-org-leaderboard_item-info-metric"><strong>$%s</strong> raised (%s)</span>
+        <span class="classy-org-leaderboard_item-info-metric">$%s</span>
       </div>
     </div>
 
@@ -136,7 +131,7 @@ ITEM_TEMPLATE;
 
         if (!empty($params['title']))
         {
-            $title = sprintf('<h4 class="classy-org-leaderboard_title">%s</h4>', esc_html($params['title']));
+            $title = sprintf('<h3 class="classy-org-leaderboard_title">%s</h3>', esc_html($params['title']));
         } else
         {
             $title = '';
@@ -146,22 +141,13 @@ ITEM_TEMPLATE;
 
         foreach ($fundraisers as $fundraiser)
         {
-          //write_log($fundraiser);
-            $goal = $fundraiser['goal'];
-            $total_raised = $fundraiser['total_raised'];
-            $percent = round(( $total_raised / $goal ) * 100);
-            $percent_meter = ($percent > 100) ? 100 : $percent;
             $name = (empty($fundraiser['alias']))
-                ? $fundraiser['member']['first_name'] . ' ' . $fundraiser['member']['last_name']
+                ? $fundraiser['supporter']['first_name'] . ' ' . $fundraiser['supporter']['last_name']
                 : $fundraiser['alias'];
-            $thumbnail = (empty($fundraiser['logo_url'])) ? '<i class="fa fa-user fa-2x fa-inverse"></i>' : '<img src="'.$fundraiser['logo_url'].'"/>';
             $itemsHtml .= sprintf(
                 $itemTemplate,
-                $thumbnail,
                 esc_html($name),
-                esc_html($percent_meter.'%'),
-                esc_html($total_raised),
-                esc_html($percent.'%')
+                esc_html($fundraiser['total_raised'])
             );
         }
 
