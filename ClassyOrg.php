@@ -59,7 +59,7 @@ class ClassyOrg
      */
     public function settingsMenu()
     {
-        add_object_page(
+        add_menu_page(
             'Classy.org Settings',
             'Classy.org',
             'administrator',
