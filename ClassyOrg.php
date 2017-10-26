@@ -25,10 +25,6 @@ class ClassyOrg
 
     public function __construct()
     {
-        // Activation hooks
-        register_activation_hook(__FILE__, array('ClassyOrg', 'activate'));
-        register_deactivation_hook(__FILE__, array('ClassyOrg', 'deactivate'));
-
         // Admin menus
         add_action('admin_menu', array($this, 'settingsMenu'));
         add_action('admin_init', array($this, 'settingsRegister'));
