@@ -151,7 +151,7 @@ ITEM_TEMPLATE;
                 : $fundraiser['alias'];
             $itemsHtml .= sprintf(
                 $itemTemplate,
-                $logoHtml,
+                wp_kses_post($logoHtml),
                 esc_html($name),
                 esc_html($fundraiser['total_raised'])
             );

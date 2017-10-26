@@ -148,7 +148,7 @@ ITEM_TEMPLATE;
             : sprintf($logoTemplate, $team['logo_url']);
             $itemsHtml .= sprintf(
                 $itemTemplate,
-                $logoHtml,
+                wp_kses_post($logoHtml),
                 esc_html($team['name']),
                 esc_html($team['total_raised'])
             );
