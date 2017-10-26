@@ -119,7 +119,7 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        <i class="fa fa-user fa-2x fa-inverse"></i>
+        %s
       </div>
       <div class="classy-org-leaderboard_item-info">
         <span class="classy-org-leaderboard_item-info-label">%s</span>
@@ -128,6 +128,8 @@ WIDGET_TEMPLATE;
     </div>
 
 ITEM_TEMPLATE;
+
+        $logoTemplate = '<img src="%s" />';
 
         if (!empty($params['title']))
         {
@@ -141,11 +143,15 @@ ITEM_TEMPLATE;
 
         foreach ($fundraisers as $fundraiser)
         {
+            $logoHtml = (empty($fundraiser['logo_url']))
+                ? '<i class="fa fa-user fa-2x fa-inverse fa-fw"></i>'
+                : sprintf($logoTemplate, $fundraiser['logo_url']);
             $name = (empty($fundraiser['alias']))
                 ? $fundraiser['supporter']['first_name'] . ' ' . $fundraiser['supporter']['last_name']
                 : $fundraiser['alias'];
             $itemsHtml .= sprintf(
                 $itemTemplate,
+                $logoHtml,
                 esc_html($name),
                 esc_html($fundraiser['total_raised'])
             );
