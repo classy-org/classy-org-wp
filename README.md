@@ -59,7 +59,7 @@ Each of these accept parameters for `id` and `title`, as above with the short co
 
 Additional embeddable items coming soon:
 
-- Fundraiser and fundraising team images on leaderboards
+- ~~Fundraiser and fundraising team images on leaderboards~~
 - Organization overview of campaigns
 
 Other items:
