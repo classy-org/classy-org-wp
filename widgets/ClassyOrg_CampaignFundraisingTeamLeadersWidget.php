@@ -119,7 +119,7 @@ WIDGET_TEMPLATE;
 
     <div class="classy-org-leaderboard_item">
       <div class="classy-org-leaderboard_item-image">
-        <i class="fa fa-group fa-2x fa-inverse"></i>
+        %s
       </div>
       <div class="classy-org-leaderboard_item-info">
         <span class="classy-org-leaderboard_item-info-label">%s</span>
@@ -128,6 +128,8 @@ WIDGET_TEMPLATE;
     </div>
 
 ITEM_TEMPLATE;
+
+        $logoTemplate = '<img src="%s" />';
 
         if (!empty($params['title']))
         {
@@ -141,8 +143,12 @@ ITEM_TEMPLATE;
 
         foreach ($teams as $team)
         {
+            $logoHtml = (empty($team['logo_url']))
+            ? '<i class="fa fa-group fa-2x fa-inverse fa-fw"></i>'
+            : sprintf($logoTemplate, $team['logo_url']);
             $itemsHtml .= sprintf(
                 $itemTemplate,
+                wp_kses_post($logoHtml),
                 esc_html($team['name']),
                 esc_html($team['total_raised'])
             );
