@@ -129,8 +129,8 @@ WIDGET_TEMPLATE;
         $html = sprintf(
             $widgetTemplate,
             $title,
-            esc_html($totalRaised),
-            esc_html($goal),
+            number_format($totalRaised),
+            number_format($goal),
             esc_html($percentToGoal)
         );
 
