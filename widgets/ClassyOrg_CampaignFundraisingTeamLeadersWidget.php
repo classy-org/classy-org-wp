@@ -150,7 +150,7 @@ ITEM_TEMPLATE;
                 $itemTemplate,
                 wp_kses_post($logoHtml),
                 esc_html($team['name']),
-                esc_html($team['total_raised'])
+                number_format(esc_html($team['total_raised']))
             );
         }
 
