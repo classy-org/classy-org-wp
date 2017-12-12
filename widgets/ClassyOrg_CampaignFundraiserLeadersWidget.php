@@ -153,7 +153,7 @@ ITEM_TEMPLATE;
                 $itemTemplate,
                 wp_kses_post($logoHtml),
                 esc_html($name),
-                esc_html($fundraiser['total_raised'])
+                number_format($fundraiser['total_raised'])
             );
         }
 

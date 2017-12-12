@@ -124,10 +124,10 @@ OVERVIEW_TABLE;
         $html = sprintf(
             $template,
             $title,
-            esc_html($transactionCount),
-            esc_html($grossTransactions),
-            esc_html($averageTransaction),
-            esc_html($donorCount)
+            number_format($transactionCount),
+            number_format($grossTransactions),
+            number_format($averageTransaction),
+            number_format($donorCount)
         );
 
         return $html;
@@ -179,10 +179,10 @@ WIDGET_TEMPLATE;
         $html = sprintf(
             $widgetTemplate,
             $title,
-            esc_html($grossTransactions),
-            esc_html($donorCount),
-            esc_html($transactionCount),
-            esc_html($averageTransaction)
+            number_format($grossTransactions),
+            number_format($donorCount),
+            number_format($transactionCount),
+            number_format($averageTransaction)
         );
 
         return $html;
