@@ -55,19 +55,8 @@ widgets that you can drop into your widget areas.
 
 Each of these accept parameters for `id` and `title`, as above with the short codes.
 
-## Roadmap
-
-Additional embeddable items coming soon:
-
-- ~~Fundraiser and fundraising team images on leaderboards~~
-- Organization overview of campaigns
-
-Other items:
-
-- Configurable cache
-
 ## Contributing
 
-When submitting a pull request, please make sure you've written good commit messages that include references to issues 
+When submitting a pull request, please make sure you've written good commit messages that include references to issues
 and clearly describe what the commit achieves. Use the commit body to explain what you did and why you did it. Thanks!
 
