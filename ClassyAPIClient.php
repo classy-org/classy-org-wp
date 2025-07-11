@@ -50,16 +50,18 @@ class ClassyAPIClient
 
         if ($token === false)
         {
+            $content = "client_id={$this->clientId}&client_secret={$this->clientSecret}&grant_type=client_credentials";
+            
             $options = array(
                 'http' => array(
-                    'header' => 'Content-Type: text/plain',
-                    'method' => 'POST'
+                    'header' => 'Content-Type: application/x-www-form-urlencoded',
+                    'method' => 'POST',
+                    'content' => $content
                 )
             );
 
             $context = stream_context_create($options);
-            $content = "client_id={$this->clientId}&client_secret={$this->clientSecret}&grant_type=client_credentials";
-            $result = file_get_contents('https://api.classy.org/oauth2/auth?' . $content, false, $context);
+            $result = file_get_contents('https://api.classy.org/oauth2/auth', false, $context);
 
             $token = json_decode($result, true);
             set_transient($cacheKey, $token['access_token'], ($token['expires_in'] - 60));
